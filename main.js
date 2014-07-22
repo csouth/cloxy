@@ -92,6 +92,11 @@ function SOCKS5Socket(nodeNetSocket) {
             }
         }
 
+        if(selectedAuthMethod === 1) {
+            // Temp fix until GSS-API is implemented
+            selectedAuthMethod = 0;
+        }
+
         switch(selectedAuthMethod) {
             case 0: // No authentication
                 nodeNetSocket.on('data', processProxyRequest);
