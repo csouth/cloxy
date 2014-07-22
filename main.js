@@ -26,12 +26,13 @@ function SOCKS5Socket(nodeNetSocket) {
 
         switch(chunk[3]) {
             case addressTypes.ipv4:
-                retVal['host'] = [
+                retVal['host'] = [].slice.call(chunk, 4, 8).join('.');
+                /*retVal['host'] = [
                     chunk[4],
                     chunk[5],
                     chunk[6],
                     chunk[7]
-                ].join('.');
+                ].join('.');*/
                 portOffset += 4;
                 break;
             case addressTypes.domain:
@@ -39,27 +40,12 @@ function SOCKS5Socket(nodeNetSocket) {
                 portOffset += 5+chunk[4];
                 break;
             case addressTypes.ipv6:
-                retVal['host'] = [
-                    chunk[4],
-                    chunk[5],
-                    chunk[6],
-                    chunk[7],
-                    chunk[8],
-                    chunk[9],
-                    chunk[10],
-                    chunk[11],
-                    chunk[12],
-                    chunk[13],
-                    chunk[14],
-                    chunk[15],
-                    chunk[16],
-                    chunk[17],
-                    chunk[18],
-                    chunk[19]
-                ].join('.');
+                retVal['host'] = [].slice.call(chunk, 4, 20).join('.');
                 portOffset += 16;
                 break;
         }
+
+        console.log(retVal);
 
         retVal['port'] = chunk.readUInt16BE(portOffset);
 
