@@ -27,12 +27,6 @@ function SOCKS5Socket(nodeNetSocket) {
         switch(chunk[3]) {
             case addressTypes.ipv4:
                 retVal['host'] = [].slice.call(chunk, 4, 8).join('.');
-                /*retVal['host'] = [
-                    chunk[4],
-                    chunk[5],
-                    chunk[6],
-                    chunk[7]
-                ].join('.');*/
                 portOffset += 4;
                 break;
             case addressTypes.domain:
