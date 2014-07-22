@@ -86,9 +86,9 @@ function SOCKS5Socket(nodeNetSocket) {
          * Figure out which auth method to use - Higher is better
          * TODO - This should check some sort of user setting to determine which to use and which is not a valid option.
          */
-        for(i = 2; i <= numberOfAuthMethods + 2; i++) {
-            if(chunk[i] < selectedAuthMethod) {
-                selectedAuthMethod = chunk[i];
+        for(authMethodOffset = 2; authMethodOffset <= numberOfAuthMethods + 2; authMethodOffset++) {
+            if(chunk[authMethodOffset] > selectedAuthMethod) {
+                selectedAuthMethod = chunk[authMethodOffset];
             }
         }
 
@@ -158,6 +158,34 @@ function SOCKS5Socket(nodeNetSocket) {
             case commands.udpAssociate:
                 break;
         }
+    }
+
+    function usernamePasswordAuth(chunk) {
+        nodeNetSocket.removeListener('data', usernamePasswordAuth);
+
+        if(chunk[0] !== 1) {
+            // This should never happen, but you know....
+            nodeNetSocket.end();
+            return;
+        }
+
+        var userByteCount = chunk[1];
+        var passStart     = 3 + userByteCount;
+        var passByteCount = chunk[2+userByteCount];
+        var user          = chunk.toString('utf8', 2, 2 + userByteCount);
+        var pass          = chunk.toString('utf8', passStart, passStart + passByteCount);
+
+        var response = new Buffer(2);
+        response[0] = 0x01;
+        if(user !== 'test' || pass !== 'test') {
+            response[0] = 0xff;
+            nodeNetSocket.end(response);
+            return;
+        }
+
+        response[1] = 0x00;
+        nodeNetSocket.on('data', processProxyRequest);
+        nodeNetSocket.write(response);
     }
 
     /**
