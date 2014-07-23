@@ -1,0 +1,25 @@
+{
+  "name": "cloxy",
+  "version": "0.0.1dev",
+  "description": "SOCKS proxy with time tracking, user management, and history.",
+  "main": "main.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/csouth/cloxy.git"
+  },
+  "keywords": [
+    "SOCKS",
+    "proxy"
+  ],
+  "author": "Christian South",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/csouth/cloxy/issues"
+  },
+  "homepage": "https://github.com/csouth/cloxy"
+}
