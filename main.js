@@ -1,26 +1,24 @@
-/**
- * SOCKS 4:                http://ftp.icm.edu.pl/packages/socks/socks4/SOCKS4.protocol
- * SOCKS 4A:               http://www.openssh.com/txt/socks4a.protocol
- */
 var net = require('net'),
-    handler5 = require('./library/Handler/SOCKS5');
+    handler5 = require('./library/Handler/SOCKS5'),
+    handler4 = require('./library/Handler/SOCKS4');
 
 net.createServer(function(socket) {
 
-    function baseHandler(chunk) {
+    socket.once('data', function(chunk) {
 
-        socket.removeListener('data', baseHandler);
-
-        switch(chunk[0]) {
-            case 5:
-                var handler = new handler5(socket);
-                handler.handle(chunk);
-                return;
-            default:
-                socket.end();
+        if(chunk[0] === 5) {
+            return new handler5(socket).handle(chunk);
         }
-    }
 
-    socket.on('data', baseHandler);
+        if(chunk[0] === 4) {
+            return new handler4(socket).handle(chunk);
+        }
+
+        /**
+         * No handler available
+         */
+        socket.end();
+
+    });
 
 }).listen(1080);

@@ -140,10 +140,10 @@ SOCKS5.prototype.handle = function(chunk) {
 
     switch(selectedAuthMethod) {
         case this.authMethods.noAuth: // No authentication
-            this.nodeNetSocket.on('data', this.processProxyRequest.bind(this));
+            this.nodeNetSocket.once('data', this.processProxyRequest.bind(this));
             break;
         case this.authMethods.usernamePassword: // Username and password authentication
-            this.nodeNetSocket.on('data', this.usernamePasswordAuth.bind(this));
+            this.nodeNetSocket.once('data', this.usernamePasswordAuth.bind(this));
             break;
         default:
             this.nodeNetSocket.end(response);
@@ -195,8 +195,6 @@ SOCKS5.prototype.processConnection = function(chunk) {
  * @return {void}
  */
 SOCKS5.prototype.processProxyRequest = function(chunk) {
-    this.nodeNetSocket.removeListener('data', this.processProxyRequest);
-
     switch(chunk[1]) {
         case this.commands.connect:
             this.processConnection(chunk);
@@ -215,8 +213,6 @@ SOCKS5.prototype.processProxyRequest = function(chunk) {
  * @return {void}
  */
 SOCKS5.prototype.usernamePasswordAuth = function(chunk) {
-    this.nodeNetSocket.removeListener('data', this.usernamePasswordAuth);
-
     if(chunk[0] !== 1) {
         // This should never happen, but you know....
         this.nodeNetSocket.end();
@@ -242,7 +238,7 @@ SOCKS5.prototype.usernamePasswordAuth = function(chunk) {
     }
 
     response[1] = 0x00;
-    this.nodeNetSocket.on('data', this.processProxyRequest.bind(this));
+    this.nodeNetSocket.once('data', this.processProxyRequest.bind(this));
     this.nodeNetSocket.write(response);
 };
 
